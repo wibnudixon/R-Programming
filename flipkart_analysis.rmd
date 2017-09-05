@@ -1,0 +1,47 @@
+---
+title: "Flipkart_Analysis"
+author: "Wibnu Dickson"
+date: "August 22, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Reading Data}
+library('knitr')
+library('dplyr')
+fpkt = read.csv('C://Users//admin//Documents//DataSets_EDA//tweets_flipkart.csv')
+kable(fpkt[1:5,])
+
+
+```
+#Identify the types of columns(locations,texts,groups etc)
+```{r}
+top_tweeters = fpkt %>% group_by(user) %>% summarise(total_tweets=n()) %>% arrange(-total_tweets)
+View(top_tweeters)
+
+```
+
+#what is the percentage of tweets from each device(use source column to know about the device)?
+```{r}
+g=length(fpkt$created_at)
+per_twe = fpkt %>% group_by(source) %>% summarise(source1=n()/g * 100 ) %>% arrange(-source1)
+kable(per_twe)
+```
+
+#which date has the maximum number of tweets ?
+```{r}
+max_tweets_date = fpkt %>% group_by(created_at) %>% summarise(max_date=n()) %>% arrange(-max_date)
+kable(max_tweets_date[1,])
+```
+
+
+
+#compute number of characters in each tweets, create a new column for the same . how many tweets are having less than 50 characters ?
+
+```{r}
+var_char= fpkt %>% group_by(text) %>% summarise()
+```
+
