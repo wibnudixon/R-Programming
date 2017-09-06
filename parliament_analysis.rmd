@@ -1,0 +1,63 @@
+---
+title: "Parliament_Analysis"
+author: "Wibnu Dickson"
+date: "27 August 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library('dplyr')
+library('knitr')
+```
+
+```{r}
+sansad = read.csv('D://Exploratory Data Analysis//Datasets//ClassWork//parliament.csv')
+```
+#Identify year wise total number of electors and voters? Also compute percentage of voters 
+
+```{r}
+total_electors = sansad %>% group_by(YEAR) %>% summarise(total_electors=sum(unique(ELECTORS),na.rm=T),total_voters=sum(VOTES),per_voters=total_voters*100/(total_electors)) %>% arrange(-total_electors)
+kable(total_electors[1:10,])
+
+
+```
+
+#Identify year wise percentage of male and female candidates?
+
+```{r}
+sansad = sansad %>% mutate(male=ifelse(SEX=="M",1,0))
+sansad = sansad %>% mutate(female=ifelse(SEX=="F",1,0))
+malfem100 = sansad %>% group_by(YEAR) %>% summarise(male_sum=sum(male),female_sum=sum(female),per_male=male_sum*100/(male_sum+female_sum),per_female=female_sum*100/(male_sum+female_sum)) %>% arrange(-YEAR)
+kable(malfem100[1:10,])
+```
+
+#Compute party wise total number of candidates won so far? Display top ten parties alone
+
+```{r}
+sansad = sansad %>% mutate(win_cand=ifelse(Position==1,1,0))
+party_won = sansad %>% group_by(PARTY) %>% summarise(win_cand1=sum(win_cand),) %>% arrange(-win_cand1)
+kable(party_won[1:10,])
+View(party_won)
+```
+
+
+
+#Identify year wise which party has won (based upon total number constituencies won)
+
+```{r}
+party_year_won = sansad %>% filter(Position==1)%>% group_by(YEAR,PARTY,add=T) %>% summarise(total_const=sum(win_cand)) %>% filter(total_const==max(total_const))
+kable(party_year_won[1:10,])
+```
+
+
+#Identify year wise percentage of winning for female candidates?
+
+```{r}
+sansad = sansad %>% mutate(fem_win_cand=ifelse(win_cand==1 & female == 1,1,0))
+sansad = sansad %>% mutate(mal_win_cand=ifelse(win_cand==1 & male==1,1,0))
+win_fem_cand = sansad %>% group_by(YEAR) %>% summarise(male_win=sum(mal_win_cand),fem_win=sum(fem_win_cand),fem_per=fem_win*100/(fem_win+ male_win)) %>% arrange(-fem_per)
+kable(win_fem_cand[1:10,])
+```
+
+
